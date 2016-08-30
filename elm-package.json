@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "summary": "bjj scoreboard written in Elm",
+    "repository": "https://github.com/tulsidas/bjj-scoreboard.git",
+    "license": "WTFPL",
+    "source-directories": [
+        "."
+    ],
+    "exposed-modules": [],
+    "dependencies": {
+        "elm-lang/core": "4.0.0 <= v < 5.0.0",
+        "elm-lang/html": "1.0.0 <= v < 2.0.0"
+    },
+    "elm-version": "0.17.0 <= v < 0.18.0"
+}

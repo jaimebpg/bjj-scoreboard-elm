@@ -1,0 +1,18 @@
+{
+  "name": "bjj-scoreboard-elm",
+  "version": "0.0.0",
+  "description": "bjj scoreboard written in Elm",
+  "main": "index.js",
+  "scripts": {
+     "watch": "chokidar '**/*.elm' -c 'elm make Main.elm --output index.js' --initial"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tulsidas/bjj-scoreboard-elm"
+  },
+  "author": "AndresQ",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/tulsidas/bjj-scoreboard-elm/issues"
+  }
+}
