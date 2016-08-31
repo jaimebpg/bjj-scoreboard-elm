@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.App as App
 import Time exposing (Time, second)
+import Luchador
 
 
 type Msg
@@ -13,27 +14,13 @@ type Msg
     | Minutos Int
     | StartStop
     | Reset
-    | Puntos Int Luchador
-    | Ventajas Int Luchador
-    | Puniciones Int Luchador
-
-
-type Color
-    = Verde
-    | Amarillo
-
-
-type alias Luchador =
-    { color : Color
-    , puntos : Int
-    , puniciones : Int
-    , ventajas : Int
-    }
+    | Amarillo Luchador.Msg
+    | Verde Luchador.Msg
 
 
 type alias Model =
-    { verde : Luchador
-    , amarillo : Luchador
+    { amarillo : Luchador.Model
+    , verde : Luchador.Model
     , tiempoRestante : Int
     , correReloj : Bool
     }
@@ -46,8 +33,8 @@ subscriptions model =
 
 initModel : ( Model, Cmd Msg )
 initModel =
-    ( { verde = Luchador Verde 0 0 0
-      , amarillo = Luchador Amarillo 0 0 0
+    ( { amarillo = Luchador.reset
+      , verde = Luchador.reset
       , tiempoRestante = 5 * 60
       , correReloj = False
       }
@@ -76,34 +63,11 @@ update msg model =
         Reset ->
             initModel
 
-        Puntos p l ->
-            let
-                nuevo =
-                    { l | puntos = Basics.max 0 (l.puntos + p) }
-            in
-                ( actualizarLuchador model nuevo, Cmd.none )
+        Amarillo msg ->
+            ( { model | amarillo = Luchador.update msg model.amarillo }, Cmd.none )
 
-        Ventajas v l ->
-            let
-                nuevo =
-                    { l | ventajas = Basics.max 0 (l.ventajas + v) }
-            in
-                ( actualizarLuchador model nuevo, Cmd.none )
-
-        Puniciones p l ->
-            let
-                nuevo =
-                    { l | puniciones = Basics.max 0 (l.puniciones + p) }
-            in
-                ( actualizarLuchador model nuevo, Cmd.none )
-
-
-actualizarLuchador : Model -> Luchador -> Model
-actualizarLuchador model luchador =
-    if luchador.color == Amarillo then
-        { model | amarillo = luchador }
-    else
-        { model | verde = luchador }
+        Verde msg ->
+            ( { model | verde = Luchador.update msg model.verde }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -118,38 +82,14 @@ view model =
             , div [ style [ ( "flex-grow", "1" ) ], onClick (Minutos 1) ] []
             ]
         , div [ id "amarillo" ]
-            [ div [ style [ ( "flex-grow", "3" ), ( "display", "flex" ) ] ]
-                [ div [ style [ ( "flex-grow", "1" ) ], onClick (Puntos -1 model.amarillo) ] []
-                , div [ class "puntos" ] [ text (toString model.amarillo.puntos) ]
-                , div [ style [ ( "flex-grow", "1" ) ], onClick (Puntos 1 model.amarillo) ] []
-                ]
-            , div [ style [ ( "flex-grow", "2" ), ( "display", "flex" ) ] ]
-                [ div [ style [ ( "flex-grow", "1" ) ], onClick (Ventajas -1 model.amarillo) ] []
-                , div [ class "ventajas" ] [ text (toString model.amarillo.ventajas) ]
-                , div [ style [ ( "flex-grow", "1" ) ], onClick (Ventajas 1 model.amarillo) ] []
-                ]
-            , div [ style [ ( "flex-grow", "1" ), ( "display", "flex" ) ] ]
-                [ div [ style [ ( "flex-grow", "1" ) ], onClick (Puniciones -1 model.amarillo) ] []
-                , div [ class "puniciones" ] [ text (toString model.amarillo.puniciones) ]
-                , div [ style [ ( "flex-grow", "1" ) ], onClick (Puniciones 1 model.amarillo) ] []
-                ]
+            [ App.map
+                Amarillo
+                (Luchador.view model.amarillo)
             ]
         , div [ id "verde" ]
-            [ div [ style [ ( "flex-grow", "3" ), ( "display", "flex" ) ] ]
-                [ div [ style [ ( "flex-grow", "1" ) ], onClick (Puntos -1 model.verde) ] []
-                , div [ class "puntos" ] [ text (toString model.verde.puntos) ]
-                , div [ style [ ( "flex-grow", "1" ) ], onClick (Puntos 1 model.verde) ] []
-                ]
-            , div [ style [ ( "flex-grow", "2" ), ( "display", "flex" ) ] ]
-                [ div [ style [ ( "flex-grow", "1" ) ], onClick (Ventajas -1 model.verde) ] []
-                , div [ class "ventajas" ] [ text (toString model.verde.ventajas) ]
-                , div [ style [ ( "flex-grow", "1" ) ], onClick (Ventajas 1 model.verde) ] []
-                ]
-            , div [ style [ ( "flex-grow", "1" ), ( "display", "flex" ) ] ]
-                [ div [ style [ ( "flex-grow", "1" ) ], onClick (Puniciones -1 model.verde) ] []
-                , div [ class "puniciones" ] [ text (toString model.verde.puniciones) ]
-                , div [ style [ ( "flex-grow", "1" ) ], onClick (Puniciones 1 model.verde) ] []
-                ]
+            [ App.map
+                Verde
+                (Luchador.view model.verde)
             ]
         ]
 
